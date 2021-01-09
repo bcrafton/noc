@@ -43,7 +43,7 @@ def quantize(x, low, high):
 
 (_, _), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
 x_test = quantize(x_test, -128, 127)
-# inputs = transform_inputs(x_test[0], k1, s, p1, p2)
+inputs = transform_inputs(x_test[0], 3, 1, 1, 1) # params should be taken from loaded model
 
 ############################################
 '''
@@ -72,11 +72,41 @@ for w in w_arrays:
 
 from chip import chip
 
+# 16 groups of 8
 c = chip()
+
+# how to program weights in chip ? 
+# yeah this is rough to do first time
+# 
+# 8b vs 1b
+# optimizing vs traditional ... [L, H, N, W] vs [L, N, H, W]
+# should be flexible so we can handle both
+# 
+# we are building hardware and compiler at same time ...
+# thats why it feels hard i think.
+# so what do we do next ? 
+# 
+# based on this: 
+'''
+WL BL
+1 1
+2 1
+2 2
+3 2
+3 4
+5 4
+'''
+# gonna be a lot easier to do optimizing method.
+# is there even a tradeoff ? 
+# same amount of input data.
+# 
+# any reuse ? 
+# definitely better reuse for traditional method.
+# idk hard to think about it ... we need to just pick one for now.
 
 ############################################
 
-
+c.map(weights, inputs)
 
 
 

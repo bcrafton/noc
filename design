@@ -5,5 +5,12 @@ should we use NoC simulator or something ?
 
 our thing is so simple is the thing ...
 
+=======
+
+its not interleaved like this
+should be 256 / 16 or 128 / 16 ... not 256 total
+and lets group PCM + SRAM
+
+=======
 
 

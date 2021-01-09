@@ -8,7 +8,7 @@ WB = 8
 
 def transform_inputs(x, k, s, p1, p2):
 
-    xh, xw, xc, xn = np.shape(x)
+    xh, xw, xc = np.shape(x)
 
     #########################
 
