@@ -26,7 +26,7 @@ def xbits(inputs):
 
 ############################
 
-def malloc(ws, xs):
+def malloc_PCM(ws, xs):
     assert (ws.keys() == xs.keys())
     assert ( len(ws.keys())-1 == max(list(ws.keys())) )
 
@@ -68,6 +68,11 @@ def malloc(ws, xs):
 
 ############################
 
+def malloc_SRAM(ws, xs, alloc_PCM):
+    assert (False)
+
+############################
+
 class chip:
 
     def __init__(self):
@@ -82,8 +87,9 @@ class chip:
     def map(self, model, inputs):
         ws = wbits(model)
         xs = xbits(inputs)
-        alloc = malloc(ws, xs) # breaking barriers
-        print (alloc)
+        alloc_PCM = malloc_PCM(ws, xs) # breaking barriers
+        # alloc_SRAM = malloc_SRAM(ws, xs, alloc_PCM)
+        # 
         # place = placement(alloc)
         # route = routing(place)
 
