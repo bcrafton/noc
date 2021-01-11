@@ -28,45 +28,45 @@ def xbits(inputs):
 
 def malloc(ws, xs):
     assert (ws.keys() == xs.keys())
+    assert ( len(ws.keys())-1 == max(list(ws.keys())) )
 
-    layer_cycles = {}
+    ################################################
+
+    ADC = 8
+    narray = 128
+    nlayer = len(ws.keys())
+
+    ################################################
+
+    layer_cycles = np.zeros(shape=nlayer)
     total_cycles = 0
-    for layer in ws.keys():
+    for layer in range(nlayer):
         w = ws[layer] # [NWL, WL, NBL, BL]
         x = xs[layer] # [P, NWL, WL, XB]
 
         nwl, wl, nbl, bl = np.shape(w)
         # np, nwl, wl, nb = np.shape(x)
 
-        ADC = 8
         ones = np.sum(x, axis=2)
         cycles = np.ceil(ones / ADC)
         layer_cycles[layer] = np.sum(cycles * nbl)
         total_cycles += layer_cycles[layer]
 
-    '''
-    print (total_cycles.keys())
-    print (total_cycles.values())
+    ################################################
 
-    share = {}
-    for layer in ws.keys():
-        share[layer] = layer_cycles[layer] / total_cycles
+    cost = np.zeros(shape=nlayer)
+    alloc = np.zeros(shape=nlayer)
 
-    print (share.values())
-    '''
+    for layer in range(nlayer):
+        nwl, _, nbl, _ = np.shape(ws[layer])
+        cost[layer] = nwl * nbl
 
-    alloc = {}
-    for layer in ws.keys():
-        alloc[layer] = 0
+    argmin = np.argmin(alloc)
+    while np.sum(alloc * cost) + cost[argmin] < narray:
+        alloc[argmin] += 1
+        argmin = np.argmin(alloc)
 
-    # use the same algorithm as before
-    array = 128
-    for layer in ws.keys():
-        alloc[layer] = nwl * nbl
-        array -= nwl * nbl
-
-    # so clear problem here is with our choice of data structures.
-    # want np array, not stupid dictionary.
+    return alloc
 
 ############################
 
@@ -85,6 +85,7 @@ class chip:
         ws = wbits(model)
         xs = xbits(inputs)
         alloc = malloc(ws, xs) # breaking barriers
+        print (alloc)
         # place = placement(alloc)
         # route = routing(place)
 
