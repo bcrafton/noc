@@ -33,7 +33,7 @@ def malloc_PCM(ws, xs):
     ################################################
 
     ADC = 8
-    narray = 128
+    narray = 128 # not accurate because we only have groups of 8.
     nlayer = len(ws.keys())
 
     ################################################
@@ -69,7 +69,53 @@ def malloc_PCM(ws, xs):
 ############################
 
 def malloc_SRAM(ws, xs, alloc_PCM):
-    assert (False)
+    assert (ws.keys() == xs.keys())
+    assert ( len(ws.keys())-1 == max(list(ws.keys())) )
+
+    ################################################
+
+    nSRAM = 128
+    nlayer = len(ws.keys())
+
+    ################################################
+
+    # need {cycles, macs}, ect for this function
+    # so we need to abtract from malloc_PCM
+
+    layer_bandwidth = np.zeros(shape=nlayer)
+    layer_capacity = np.zeros(shape=nlayer)
+
+    for layer in range(nlayer):
+        layer_bandwidth[layer] = 0.
+
+    ################################################
+
+    # problem is not optimization
+    # problem is satisfaction
+    
+    # if we have tons of SRAM, then no problem.
+    # if not much SRAM, where it is bottleneck or barely enof:
+
+    # challenge will be difference between capacity and bandwidth
+
+    # do we have to do that here though ? 
+    # shouldnt this function just allocate, routing figures the rest out ? 
+
+    # what if we are capacity constrained ? 
+    # its realistic because 
+    # (1) we have all activations on chip
+    # (2) we are trying to support all kinds of modes
+    # layer-by-layer 1b-8b could save you here.
+    # if not enough capacity -> layer-by-layer
+
+    # we have to make an assumption though.
+    # assume there exists enough SRAM capacity 
+    # BUT, you might have to parition and share SRAMs with bandwidth and capacity.
+
+    ################################################
+
+    alloc = None
+    return alloc    
 
 ############################
 
@@ -88,7 +134,7 @@ class chip:
         ws = wbits(model)
         xs = xbits(inputs)
         alloc_PCM = malloc_PCM(ws, xs) # breaking barriers
-        # alloc_SRAM = malloc_SRAM(ws, xs, alloc_PCM)
+        alloc_SRAM = malloc_SRAM(ws, xs, alloc_PCM)
         # 
         # place = placement(alloc)
         # route = routing(place)
