@@ -6,43 +6,33 @@ from transform_inputs import transform_inputs
 
 ############################
 
-def bits(model, inputs):
-    xh, xw, xc, xn = np.shape(inputs)    
-    size = xh
+def wbits(model):
     ws = []
-    xs = []
     for layer in model.keys():
         w = model[layer]['f']
         k, _, c, n = np.shape(w)
-        p1 = model[layer]['p1']
-        p2 = model[layer]['p2']
-        s  = model[layer]['s']
-        
         w = np.reshape(w, (k * k * c, n)).astype(int)
         ws.append(transform_weights(w))
-
-        x = (size, size, c)
-        xs.append(x)
-        size = (size - k + s + p1 + p2) // s
-
-    return ws, xs
+    return ws
 
 ############################
 
-def malloc(grid, w, x):
-    nwl, _, nbl, _ = np.shape(w)
-    nd = 8 // nbl
-    
-    # allocate [nwl] grid cells.
-    col = np.floor(np.sqrt(nwl))
-    row = nwl // col
-    rem = nwl % col
-    # nwl=3 -> [col=1, row=3, rem=0]
+def xbits(model, inputs):
+    for layer in model.keys():
+        pass
+        # need more than just list of weights.
+        # need actual CNN model ... with pools and shit.
+        # need batches as well
+        # generate intermediate activations for profiling.
+        # also will make life easy to have real tensors for allocating SRAM.
+    return xs
 
-    # pick a start address
-    # this should be an optimization problem
-    # create clusters, then figure out how to route them.
-    # 
+############################
+
+def malloc(ws, xs):
+    # nwl, _, nbl, _ = np.shape(ws)
+    for x in xs:
+        print (np.shape(x))
 
 ############################
 
@@ -58,10 +48,10 @@ class chip:
                 self.grid[i][j] = {'PCM': PCM(), 'SRAM': SRAM()}
 
     def map(self, model, inputs):
-        ws, xs = bits(model, inputs)
+        ws = wbits(model)
         alloc = malloc(ws, xs) # breaking barriers
-        place = placement(alloc)
-        route = routing(place)
+        # place = placement(alloc)
+        # route = routing(place)
 
 
 
