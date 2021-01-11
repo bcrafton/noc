@@ -57,35 +57,6 @@ class chip:
             for j in range(4):
                 self.grid[i][j] = {'PCM': PCM(), 'SRAM': SRAM()}
 
-    def step(self):
-        pass
-
-    '''
-    def map(self, model, inputs):
-        # set PCM and SRAM to hold specific parts of our model and activations.
-        # this is probably a whole field we dont know about.
-        #
-        ws, xs = bits(model, inputs)
-        
-        grid = np.zeros(shape=(4, 4))
-        for (w, x) in zip(ws, xs):
-            # malloc - where to place w and x ? 
-            malloc(grid, w, x)
-            # what about when we cant store the whole input in the SRAM ? 
-            # need to "orchestrate" the transfer to all adjacent nodes.
-            # 
-            # allocate
-            # placement / mapping
-            # routing
-            # 
-            # think problem is small enough such that we can find optimal solution
-            # 
-            # we already did allocation with breaking barriers.
-            # but now we have to do the other parts.
-            # 
-            # 
-    '''
-
     def map(self, model, inputs):
         ws, xs = bits(model, inputs)
         alloc = malloc(ws, xs) # breaking barriers
