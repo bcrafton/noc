@@ -60,6 +60,7 @@ class chip:
     def step(self):
         pass
 
+    '''
     def map(self, model, inputs):
         # set PCM and SRAM to hold specific parts of our model and activations.
         # this is probably a whole field we dont know about.
@@ -83,6 +84,17 @@ class chip:
             # but now we have to do the other parts.
             # 
             # 
+    '''
+
+    def map(self, model, inputs):
+        ws, xs = bits(model, inputs)
+        alloc = malloc(ws, xs) # breaking barriers
+        place = placement(alloc)
+        route = routing(place)
+
+
+
+
             
             
             
@@ -92,15 +104,4 @@ class chip:
             
             
             
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+

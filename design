@@ -13,4 +13,53 @@ and lets group PCM + SRAM
 
 =======
 
+allocate
+route 
+place
+
+=======
+
+route before place
+> decouple convolution/matmul and all operations in our graph
+> input/output, remove unnecessary information from data structures.
+
+sram allocation is required
+> large networks capacity limited
+> small networks bandwidth limited
+
+sram loosely coupled from PCM
+> layer 1 = 256b/cycle
+> layer N = 32b/cycle
+
+=======
+
+consider NoC bandwidth
+> crazier our placement, the more it will be stretched.
+
+SRAM bandwidth should always be <= link bandwidth
+> can SRAM bandwidth be split ? 64b to right, 64b to left ? 
+> what would be the max grouping size for SRAM then ? 128b = 4 SRAMs ? 
+
+how much bandwidth would be needed to supply 128 PCRAMs ?
+> 128 SRAMs = 4096b / cycle
+> which would be ridiculous
+
+=======
+
+so how do we proceed
+we dont really know how to do SRAM for these designs
+and dont think we are going to magically figure it out
+so we need to step forward and iterate later
+
+> perform proper allocation for PCM
+> perform SRAM allocation based on PCM allocation
+
+=======
+
+
+
+
+
+
+
 
