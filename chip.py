@@ -17,14 +17,11 @@ def wbits(model):
 
 ############################
 
-def xbits(model, inputs):
-    for layer in model.keys():
-        pass
-        # need more than just list of weights.
-        # need actual CNN model ... with pools and shit.
-        # need batches as well
-        # generate intermediate activations for profiling.
-        # also will make life easy to have real tensors for allocating SRAM.
+def xbits(inputs):
+    xs = []
+    for layer in inputs.keys():
+        x = inputs[layer].astype(int)
+        xs.append(transform_inputs(x[0], 3, 1, 1, 1))
     return xs
 
 ############################
@@ -49,6 +46,7 @@ class chip:
 
     def map(self, model, inputs):
         ws = wbits(model)
+        xs = xbits(inputs)
         alloc = malloc(ws, xs) # breaking barriers
         # place = placement(alloc)
         # route = routing(place)
