@@ -39,32 +39,30 @@ def malloc(ws, xs):
     ################################################
 
     layer_cycles = np.zeros(shape=nlayer)
-    total_cycles = 0
     for layer in range(nlayer):
         w = ws[layer] # [NWL, WL, NBL, BL]
         x = xs[layer] # [P, NWL, WL, XB]
 
         nwl, wl, nbl, bl = np.shape(w)
-        # np, nwl, wl, nb = np.shape(x)
+        # np, nwl, wl, nb = np.shape(x) # cant use "np"
 
         ones = np.sum(x, axis=2)
         cycles = np.ceil(ones / ADC)
         layer_cycles[layer] = np.sum(cycles * nbl)
-        total_cycles += layer_cycles[layer]
 
     ################################################
 
     cost = np.zeros(shape=nlayer)
-    alloc = np.zeros(shape=nlayer)
-
+    alloc = np.ones(shape=nlayer)
     for layer in range(nlayer):
         nwl, _, nbl, _ = np.shape(ws[layer])
         cost[layer] = nwl * nbl
+    assert (np.sum(alloc * cost) <= narray)
 
-    argmin = np.argmin(alloc)
-    while np.sum(alloc * cost) + cost[argmin] < narray:
-        alloc[argmin] += 1
-        argmin = np.argmin(alloc)
+    argmax = np.argmax(layer_cycles / alloc)
+    while np.sum(alloc * cost) + cost[argmax] < narray:
+        alloc[argmax] += 1
+        argmax = np.argmax(layer_cycles / alloc)
 
     return alloc
 
