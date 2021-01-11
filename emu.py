@@ -9,8 +9,10 @@ from chip import chip
 
 ############################################
 
-weights = np.load('cnn.npy', allow_pickle=True).item()
-inputs = np.load('act.npy', allow_pickle=True).item()
+# use "layers.py" to verify accuracy correctness.
+# build simple numpy cnn model
+weights = np.load('./data/cnn.npy', allow_pickle=True).item()
+inputs = np.load('./data/act.npy', allow_pickle=True).item()
 
 ############################################
 

@@ -7,29 +7,53 @@ from transform_inputs import transform_inputs
 ############################
 
 def wbits(model):
-    ws = []
+    ws = {}
     for layer in model.keys():
         w = model[layer]['f']
         k, _, c, n = np.shape(w)
         w = np.reshape(w, (k * k * c, n)).astype(int)
-        ws.append(transform_weights(w))
+        ws[layer] = transform_weights(w)
     return ws
 
 ############################
 
 def xbits(inputs):
-    xs = []
+    xs = {}
     for layer in inputs.keys():
         x = inputs[layer].astype(int)
-        xs.append(transform_inputs(x[0], 3, 1, 1, 1))
+        xs[layer] = transform_inputs(x[0], 3, 1, 1, 1)
     return xs
 
 ############################
 
 def malloc(ws, xs):
-    # nwl, _, nbl, _ = np.shape(ws)
-    for x in xs:
-        print (np.shape(x))
+    assert (ws.keys() == xs.keys())
+
+    layer_cycles = {}
+    total_cycles = 0
+    for layer in ws.keys():
+        w = ws[layer] # [NWL, WL, NBL, BL]
+        x = xs[layer] # [P, NWL, WL, XB]
+
+        nwl, wl, nbl, bl = np.shape(w)
+        # np, nwl, wl, nb = np.shape(x)
+
+        ADC = 8
+        ones = np.sum(x, axis=2)
+        cycles = np.ceil(ones / ADC)
+        layer_cycles[layer] = np.sum(cycles * nbl)
+        total_cycles += layer_cycles[layer]
+
+    '''
+    print (total_cycles.keys())
+    print (total_cycles.values())
+
+    share = {}
+    for layer in ws.keys():
+        share[layer] = layer_cycles[layer] / total_cycles
+
+    print (share.values())
+    '''
 
 ############################
 
@@ -51,7 +75,7 @@ class chip:
         # place = placement(alloc)
         # route = routing(place)
 
-
+############################
 
 
             
