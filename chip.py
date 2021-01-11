@@ -55,6 +55,19 @@ def malloc(ws, xs):
     print (share.values())
     '''
 
+    alloc = {}
+    for layer in ws.keys():
+        alloc[layer] = 0
+
+    # use the same algorithm as before
+    array = 128
+    for layer in ws.keys():
+        alloc[layer] = nwl * nbl
+        array -= nwl * nbl
+
+    # so clear problem here is with our choice of data structures.
+    # want np array, not stupid dictionary.
+
 ############################
 
 class chip:
