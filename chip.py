@@ -83,7 +83,7 @@ def malloc_PCM(ws, xs, params):
 
 ############################
 
-def malloc_SRAM(ws, xs, params, alloc_PCM):
+def malloc_SRAM(model, inputs, ws, xs, params, alloc_PCM):
     assert (ws.keys() == xs.keys())
     assert (len(ws.keys())-1 == max(list(ws.keys())))
 
@@ -92,14 +92,35 @@ def malloc_SRAM(ws, xs, params, alloc_PCM):
     # do we need {cycles, macs}, for this function ?
     # only if we are bandwidth limited I think
 
-    layer_bandwidth = np.zeros(shape=params['nLayer'])
     layer_capacity = np.zeros(shape=params['nLayer'])
 
     for layer in range(params['nLayer']):
-        layer_bandwidth[layer] = 0.
+        _, H, W, C = np.shape(inputs[layer])
+        layer_capacity[layer] = H * W * C
+
+    '''
+    print ()
+    print (layer_capacity)
+    print (np.sum(layer_capacity))
+    print (params['nLayer'] * 1024 * 4)
+    '''
 
     ################################################
 
+    layer_bandwidth = np.zeros(shape=params['nLayer'])
+
+    for layer in range(params['nLayer']):
+        p, nwl, wl, b = np.shape(xs[layer])
+        total_bits = p * nwl * wl * b
+        layer_bandwidth[layer] = total_bits / params['cycles'][layer]
+
+    '''
+    print (layer_bandwidth)
+    '''
+
+    ################################################
+
+    alloc = None
     return alloc    
 
 ############################
@@ -120,7 +141,7 @@ class chip:
         xs = xbits(inputs)
         params = compute_params(ws, xs)
         alloc_PCM = malloc_PCM(ws, xs, params) # breaking barriers
-        alloc_SRAM = malloc_SRAM(ws, xs, params, alloc_PCM)
+        alloc_SRAM = malloc_SRAM(model, inputs, ws, xs, params, alloc_PCM)
         # 
         # place = placement(alloc)
         # route = routing(place)

@@ -96,10 +96,25 @@ does malloc_SRAM have to do anything then ?
 > make sure we have enof capacity ? 
 > allocate SRAM and capacity anyways ?
 
+=======
 
+how we handle the model depends on 
+(1) capacity of SRAM -- can you fit all activations on chip
+(2) number of PCMs -- if it makes sense to pipeline
 
+is it either:
+pipeline
+dont pipeline
+?
+or is there an inbetween ? 
 
+I think there is something inbeteen.
+arrays are used for 4 different layers ... but not all
+then we have N/4 pipe stages
 
+figuring out when to do what is important.
+
+=======
 
 
 
