@@ -56,6 +56,59 @@ so we need to step forward and iterate later
 
 =======
 
+malloc_SRAM:
+
+# problem is not optimization
+# problem is satisfaction
+
+# if we have tons of SRAM, then no problem.
+# if not much SRAM, where it is bottleneck or barely enof:
+
+# challenge will be difference between capacity and bandwidth
+
+# do we have to do that here though ? 
+# shouldnt this function just allocate, routing figures the rest out ? 
+
+# what if we are capacity constrained ? 
+# its realistic because 
+# (1) we have all activations on chip
+# (2) we are trying to support all kinds of modes
+# layer-by-layer 1b-8b could save you here.
+# if not enough capacity -> layer-by-layer
+
+# we have to make an assumption though.
+# assume there exists enough SRAM capacity 
+# BUT, you might have to parition and share SRAMs with bandwidth and capacity.
+
+=======
+
+SRAM allocation = 
+capacity
+cycles ... every Nth cycle in a period we can allocate out
+> we could also distribute 32b/128b banks
+> but then we have to give each one a header or something
+
+so keep both options in mind, but start with cycles.
+
+=======
+
+does malloc_SRAM have to do anything then ? 
+> make sure we have enof capacity ? 
+> allocate SRAM and capacity anyways ?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

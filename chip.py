@@ -21,12 +21,12 @@ def xbits(inputs):
     xs = {}
     for layer in inputs.keys():
         x = inputs[layer].astype(int)
-        xs[layer] = transform_inputs(x[0], 3, 1, 1, 1)
+        xs[layer] = transform_inputs(x[0], 3, 1, 1, 1) # hardcoded.
     return xs
 
 ############################
 
-def malloc_PCM(ws, xs):
+def compute_params(ws, xs):
     assert (ws.keys() == xs.keys())
     assert ( len(ws.keys())-1 == max(list(ws.keys())) )
 
@@ -52,69 +52,54 @@ def malloc_PCM(ws, xs):
 
     ################################################
 
-    cost = np.zeros(shape=nlayer)
-    alloc = np.ones(shape=nlayer)
-    for layer in range(nlayer):
+    params = {}
+    params['cycles'] = layer_cycles
+    params['nLayer'] = nlayer
+    params['ADC'] = 8
+    params['nPCM'] = 128
+    params['nSRAM'] = 128
+
+    return params
+
+############################
+
+def malloc_PCM(ws, xs, params):
+    assert (ws.keys() == xs.keys())
+    assert ( len(ws.keys())-1 == max(list(ws.keys())) )
+
+    cost = np.zeros(shape=params['nLayer'])
+    alloc = np.ones(shape=params['nLayer'])
+    for layer in range(params['nLayer']):
         nwl, _, nbl, _ = np.shape(ws[layer])
         cost[layer] = nwl * nbl
-    assert (np.sum(alloc * cost) <= narray)
+    assert (np.sum(alloc * cost) <= params['nPCM'])
 
-    argmax = np.argmax(layer_cycles / alloc)
-    while np.sum(alloc * cost) + cost[argmax] < narray:
+    argmax = np.argmax(params['cycles'] / alloc)
+    while np.sum(alloc * cost) + cost[argmax] < params['nPCM']:
         alloc[argmax] += 1
-        argmax = np.argmax(layer_cycles / alloc)
+        argmax = np.argmax(params['cycles'] / alloc)
 
     return alloc
 
 ############################
 
-def malloc_SRAM(ws, xs, alloc_PCM):
+def malloc_SRAM(ws, xs, params, alloc_PCM):
     assert (ws.keys() == xs.keys())
-    assert ( len(ws.keys())-1 == max(list(ws.keys())) )
+    assert (len(ws.keys())-1 == max(list(ws.keys())))
 
     ################################################
 
-    nSRAM = 128
-    nlayer = len(ws.keys())
+    # do we need {cycles, macs}, for this function ?
+    # only if we are bandwidth limited I think
 
-    ################################################
+    layer_bandwidth = np.zeros(shape=params['nLayer'])
+    layer_capacity = np.zeros(shape=params['nLayer'])
 
-    # need {cycles, macs}, ect for this function
-    # so we need to abtract from malloc_PCM
-
-    layer_bandwidth = np.zeros(shape=nlayer)
-    layer_capacity = np.zeros(shape=nlayer)
-
-    for layer in range(nlayer):
+    for layer in range(params['nLayer']):
         layer_bandwidth[layer] = 0.
 
     ################################################
 
-    # problem is not optimization
-    # problem is satisfaction
-    
-    # if we have tons of SRAM, then no problem.
-    # if not much SRAM, where it is bottleneck or barely enof:
-
-    # challenge will be difference between capacity and bandwidth
-
-    # do we have to do that here though ? 
-    # shouldnt this function just allocate, routing figures the rest out ? 
-
-    # what if we are capacity constrained ? 
-    # its realistic because 
-    # (1) we have all activations on chip
-    # (2) we are trying to support all kinds of modes
-    # layer-by-layer 1b-8b could save you here.
-    # if not enough capacity -> layer-by-layer
-
-    # we have to make an assumption though.
-    # assume there exists enough SRAM capacity 
-    # BUT, you might have to parition and share SRAMs with bandwidth and capacity.
-
-    ################################################
-
-    alloc = None
     return alloc    
 
 ############################
@@ -133,8 +118,9 @@ class chip:
     def map(self, model, inputs):
         ws = wbits(model)
         xs = xbits(inputs)
-        alloc_PCM = malloc_PCM(ws, xs) # breaking barriers
-        alloc_SRAM = malloc_SRAM(ws, xs, alloc_PCM)
+        params = compute_params(ws, xs)
+        alloc_PCM = malloc_PCM(ws, xs, params) # breaking barriers
+        alloc_SRAM = malloc_SRAM(ws, xs, params, alloc_PCM)
         # 
         # place = placement(alloc)
         # route = routing(place)
